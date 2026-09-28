@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PHI Firewall · live demo</title>
+<link rel="stylesheet" href="/static/base.css">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="brand"><div class="mark">⛨</div><div>PHI Firewall <small>privacy proxy for LLMs</small></div></div>
+  <nav class="tabs"><a class="tab" href="/docs">API docs</a></nav>
+</div></header>
+<main class="wrap main-stack">
+  <div class="hero">
+    <h1>See exactly what your LLM sees</h1>
+    <p>Paste a clinical note. The firewall finds personal and health data, replaces it with tokens before the request leaves your network, then restores the real values in the model's answer. This demo uses a mock LLM that repeats what it received.</p>
+  </div>
+
+  <div class="card stack">
+    <div class="row" style="justify-content:space-between">
+      <h2 style="margin:0">Input text</h2>
+      <div class="row">
+        <button class="btn sm" id="sample">Sample note</button>
+        <button class="btn sm" id="card">Add a card number</button>
+        <button class="btn sm" id="clear">Clear</button>
+      </div>
+    </div>
+    <textarea id="text" rows="7" maxlength="20000" aria-label="Text to scan"></textarea>
+    <div class="row">
+      <button class="btn primary" id="send">Send through firewall</button>
+      <span class="muted" id="status" style="font-size:13px;overflow-wrap:anywhere;min-width:0;flex:1"></span>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="card step"><h2><span class="num">1</span>Detected in your text</h2>
+      <div class="panel" id="detected"><span class="muted">Press “Send through firewall”.</span></div>
+      <div class="legend" style="margin-top:10px">
+        <span><i style="background:var(--accent)"></i>tokenized</span><span><i style="background:var(--warn)"></i>masked</span>
+        <span><i style="background:var(--bad)"></i>blocks request</span><span><i style="background:var(--ok)"></i>allowed</span></div>
+    </div>
+    <div class="card step"><h2><span class="num">2</span>What the LLM receives</h2>
+      <div class="panel" id="llm"><span class="muted">—</span></div></div>
+    <div class="card step"><h2><span class="num">3</span>What your app gets back</h2>
+      <div class="panel" id="back"><span class="muted">—</span></div>
+      <div class="legend" style="margin-top:10px"><span><i style="background:var(--ok)"></i>real value restored by the firewall</span></div></div>
+  </div>
+
+  <div class="io">
+    <div class="card"><h2>Entities found</h2>
+      <div class="table-wrap"><table><thead><tr><th>Type</th><th>Count</th><th>Action</th></tr></thead><tbody id="ents"><tr><td colspan="3" class="muted">—</td></tr></tbody></table></div>
+      <h3>Policy</h3><div class="row" id="policy"></div>
+    </div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between"><h2 style="margin:0">Audit log</h2>
+        <div class="row"><span id="verify"></span><button class="btn sm" id="verifyBtn">Verify hash chain</button></div></div>
+      <p class="muted" style="font-size:13px;margin:8px 0">Every record is chained to the previous one with SHA-256, and stores only counts — never the values.</p>
+      <div class="table-wrap"><table class="audit"><thead><tr><th>Time</th><th>Event</th><th>Entities</th><th>Hash</th></tr></thead><tbody id="audit"></tbody></table></div>
+    </div>
+  </div>
+</main>
+<footer><div class="wrap">PHI Firewall · open source · the sample note is invented · not a compliance certification</div></footer>
+<script src="/static/app.js"></script>
+</body>
+</html>

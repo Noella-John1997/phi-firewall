@@ -1,0 +1,14 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+# In Render: New + -> Blueprint -> pick this GitHub repo -> Apply.
+services:
+  - type: web
+    name: phi-firewall
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: UPSTREAM_BASE_URL
+        value: mock          # keep the public demo free: no real LLM calls
+      - key: PHI_FIREWALL_MASTER_KEYS
+        sync: false          # optional: paste "k1:<output of phi-firewall gen-key>" in the Render dashboard

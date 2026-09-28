@@ -24,4 +24,4 @@ phi-firewall = "phi_firewall.cli:main"
 include = ["phi_firewall*"]
 
 [tool.setuptools.package-data]
-phi_firewall = ["policy/*.yaml"]
+phi_firewall = ["policy/*.yaml", "web/static/*"]

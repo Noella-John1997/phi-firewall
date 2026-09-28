@@ -1,4 +1,4 @@
-# `tests/` — 29 automated tests
+# `tests/` — automated tests
 
 ```bash
 pytest -q
@@ -11,4 +11,5 @@ pytest -q
 | `test_vault.py` | Encryption round-trip, wrong AAD fails, **key rotation**, TTL expiry, **nothing readable on disk** |
 | `test_audit.py` | Hash chain verifies, **edited and deleted lines are detected**, chain survives restarts |
 | `test_proxy.py` | **The LLM never receives the raw PHI** but the user gets it back, multi-part messages, 422 blocking, redact/rehydrate API, API-key auth, **no PHI in the audit log** |
+| `test_proxy.py` (web part) | Demo page loads, `/v1/scan` spans and blocking, policy endpoint, audit tail has no values, input size limit |
 | `conftest.py` | Shared fixtures: temp settings, mock upstream, sample note |

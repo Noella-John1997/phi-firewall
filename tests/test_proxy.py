@@ -68,3 +68,26 @@ def test_audit_log_has_no_phi_and_verifies(settings, mock_upstream):
 def test_streaming_rejected(settings, mock_upstream):
     c = _client(settings, mock_upstream)
     assert c.post("/v1/chat/completions", json={"stream": True, "messages": []}).status_code == 400
+
+
+def test_ui_and_scan(settings, mock_upstream):
+    c = _client(settings, mock_upstream)
+    assert "PHI Firewall" in c.get("/").text
+    r = c.post("/v1/scan", json={"text": NOTE}).json()
+    assert {"PERSON", "EMAIL", "AADHAAR"} <= {s["entity"] for s in r["spans"]}
+    assert "[[PERSON_1]]" in r["redacted"] and r["blocked"] == []
+    blocked = c.post("/v1/scan", json={"text": "card 4111 1111 1111 1111"}).json()
+    assert blocked["blocked"] == ["CREDIT_CARD"] and blocked["redacted"] is None
+    assert c.get("/v1/policy").json()["entities"]["CREDIT_CARD"] == "block"
+
+
+def test_audit_tail_has_no_values(settings, mock_upstream):
+    c = _client(settings, mock_upstream)
+    c.post("/v1/redact", json={"text": NOTE})
+    recs = c.get("/v1/audit/tail").json()["records"]
+    assert recs[0]["event"] == "redact" and "Jane" not in str(recs)
+
+
+def test_input_size_limit(settings, mock_upstream):
+    c = _client(settings, mock_upstream)
+    assert c.post("/v1/scan", json={"text": "x" * 20_001}).status_code == 422

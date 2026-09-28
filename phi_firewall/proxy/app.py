@@ -16,8 +16,9 @@ import uuid
 from collections import Counter
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field
 
 from ..audit import AuditLog, verify_chain
 from ..config import Settings
@@ -28,22 +29,29 @@ from ..vault import EnvelopeCipher, LocalKeyProvider, TokenVault
 from .upstream import Upstream, upstream_from_url
 
 
+MAX_TEXT = 20_000  # characters per request; keeps a public demo safe
+STATIC = __import__("pathlib").Path(__file__).resolve().parents[1] / "web" / "static"
+
+
 class RedactBody(BaseModel):
-    text: str
+    text: str = Field(..., max_length=MAX_TEXT)
 
 
 class RehydrateBody(BaseModel):
     request_id: str
-    text: str
+    text: str = Field(..., max_length=MAX_TEXT)
 
 
 def _counts_header(c: Counter) -> str:
     return ",".join(f"{k}={v}" for k, v in sorted(c.items())) or "none"
 
 
-def create_app(settings: Settings | None = None, upstream: Upstream | None = None) -> FastAPI:
+def create_app(settings: Settings | None = None, upstream: Upstream | None = None,
+               serve_ui: bool = True) -> FastAPI:
     s = settings or Settings()
-    redactor = Redactor(DetectionEngine(), load_policy(s.policy_path))
+    policy = load_policy(s.policy_path)
+    engine = DetectionEngine()
+    redactor = Redactor(engine, policy)
     vault = TokenVault(EnvelopeCipher(LocalKeyProvider(s.master_keys)), s.vault_path, s.vault_ttl_seconds)
     audit = AuditLog(s.audit_log_path)
     up = upstream or upstream_from_url(s.upstream_base_url, s.upstream_api_key)
@@ -69,6 +77,36 @@ def create_app(settings: Settings | None = None, upstream: Upstream | None = Non
     def health():
         return {"ok": True, "upstream": s.upstream_base_url}
 
+    if serve_ui:
+        app.mount("/static", StaticFiles(directory=STATIC), name="static")
+
+        @app.get("/", include_in_schema=False)
+        def index():
+            return FileResponse(STATIC / "index.html")
+
+    @app.get("/v1/policy")
+    def get_policy():
+        return {"default": policy.default.value, "entities": {k: v.value for k, v in sorted(policy.entities.items())}}
+
+    @app.post("/v1/scan")
+    def scan(body: RedactBody):
+        """Show what WOULD happen: spans, actions and the redacted text. Nothing is stored."""
+        spans = [{"entity": sp.entity, "start": sp.start, "end": sp.end, "score": sp.score,
+                  "action": policy.action_for(sp.entity).value} for sp in engine.detect(body.text)]
+        blocked = [sp["entity"] for sp in spans if sp["action"] == "block"]
+        redacted = None if blocked else redactor.redact(body.text).text
+        return {"spans": spans, "redacted": redacted, "blocked": sorted(set(blocked))}
+
+    @app.get("/v1/audit/tail")
+    def audit_tail(n: int = 20, cid: str = Depends(client_id)):
+        """Last n audit records (they never contain PHI values)."""
+        p = __import__("pathlib").Path(s.audit_log_path)
+        if not p.exists():
+            return {"records": []}
+        lines = p.read_text().splitlines()[-max(1, min(n, 200)):]
+        import json as _json
+        return {"records": [_json.loads(l) for l in reversed(lines)]}
+
     @app.post("/v1/redact")
     def redact(body: RedactBody, cid: str = Depends(client_id)):
         rid = uuid.uuid4().hex
@@ -87,6 +125,8 @@ def create_app(settings: Settings | None = None, upstream: Upstream | None = Non
 
     @app.post("/v1/chat/completions")
     async def chat(payload: dict, cid: str = Depends(client_id)):
+        if len(str(payload.get("messages", ""))) > MAX_TEXT * 2:
+            raise HTTPException(413, "request too large")
         if payload.get("stream"):
             raise HTTPException(400, "streaming is not supported yet (see README roadmap)")
         t0 = time.perf_counter()

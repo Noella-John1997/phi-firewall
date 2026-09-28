@@ -1,6 +1,6 @@
 # PHI Firewall — keep patient data out of your LLM prompts
 
-![python](https://img.shields.io/badge/python-3.10%2B-blue) ![tests](https://img.shields.io/badge/tests-29%20passing-green) ![license](https://img.shields.io/badge/license-MIT-lightgrey)
+![python](https://img.shields.io/badge/python-3.10%2B-blue) ![tests](https://img.shields.io/badge/tests-pytest-green) ![license](https://img.shields.io/badge/license-MIT-lightgrey)
 
 **PHI Firewall** is a drop-in proxy that sits between your app and any LLM API. It finds
 personal and health data (names, dates of birth, MRNs, emails, phones, **Aadhaar, PAN**, SSNs…),
@@ -69,11 +69,30 @@ docker build -t phi-firewall .
 docker run -p 8000:8000 -e PHI_FIREWALL_MASTER_KEYS=$(phi-firewall gen-key) phi-firewall
 ```
 
+## Web demo
+
+![PHI Firewall web demo](docs/screenshots/desktop-light.png)
+
+The proxy serves a demo page at `/`. Paste a note and press **Send through firewall** to see three panels:
+**1. detected** (colour = policy action) → **2. what the LLM receives** (tokens) → **3. what your app gets back**
+(real values restored, underlined green). Add a card number to see the request get blocked, and
+verify the audit hash chain with one click.
+
+| Dark mode | Phone |
+| --- | --- |
+| ![](docs/screenshots/desktop-dark.png) | ![](docs/screenshots/mobile.png) |
+
+**Put it online for free** (Render or Hugging Face Spaces, mock LLM so it costs nothing): see [`deploy/`](deploy/).
+`Live demo: https://phi-firewall.onrender.com` *(replace with your URL)*
+
 ## API
 
 | Method & path | What it does |
 | --- | --- |
 | `POST /v1/chat/completions` | OpenAI-compatible. Redacts every message, forwards, restores tokens in the answer. Adds `X-PHI-Entities` and `X-PHI-Firewall-Request-Id` headers. |
+| `POST /v1/scan` | `{"text"}` → detected spans with positions and policy actions + redacted preview. Stores nothing. |
+| `GET /v1/policy` | Active policy |
+| `GET /v1/audit/tail?n=20` | Latest audit records (counts only) |
 | `POST /v1/redact` | `{"text": ...}` → redacted text + `request_id` (mapping kept encrypted in the vault until TTL) |
 | `POST /v1/rehydrate` | `{"request_id", "text"}` → text with tokens restored. For async / multi-step pipelines. |
 | `GET /v1/audit/verify` | Checks the audit log hash chain |
@@ -125,7 +144,10 @@ See `.env.example`.
 | [`phi_firewall/vault/`](phi_firewall/vault/) | Envelope encryption, key providers, SQLite vault |
 | [`phi_firewall/audit/`](phi_firewall/audit/) | Hash-chained audit log |
 | [`phi_firewall/proxy/`](phi_firewall/proxy/) | FastAPI app and upstream clients |
-| [`tests/`](tests/) | 29 pytest tests |
+| [`phi_firewall/web/`](phi_firewall/web/) | Browser demo served at `/` |
+| [`deploy/`](deploy/) | Free hosting guides (Render, Hugging Face, Docker) |
+| [`docs/`](docs/) | Screenshots |
+| [`tests/`](tests/) | pytest suite |
 | [`examples/`](examples/) | Demo client, OpenAI SDK example, sample clinical note |
 
 ## Honest limitations
