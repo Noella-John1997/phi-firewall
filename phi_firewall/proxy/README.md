@@ -1,4 +1,4 @@
-# `proxy/` — the web service
+# `proxy/` - the web service
 
 | File | Purpose |
 | --- | --- |

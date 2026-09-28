@@ -1,4 +1,4 @@
-"""Point the official OpenAI SDK at the firewall — no other code changes.
+"""Point the official OpenAI SDK at the firewall - no other code changes.
 
     pip install openai
     export UPSTREAM_BASE_URL=https://api.openai.com/v1 UPSTREAM_API_KEY=sk-...

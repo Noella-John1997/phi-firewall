@@ -1,4 +1,4 @@
-# `detectors/` — finding sensitive data
+# `detectors/` - finding sensitive data
 
 ## How detection works
 
@@ -8,7 +8,7 @@
 3. **Overlaps are resolved** (`engine.py`). If two detectors match the same characters we keep the
    higher score, then the longer match. That's how `DOB: 04/12/1987` becomes a `DOB` and not a plain `DATE`.
 
-## Checksums in simple words
+## How the checksums work
 
 | Checksum | Used for | Idea |
 | --- | --- | --- |

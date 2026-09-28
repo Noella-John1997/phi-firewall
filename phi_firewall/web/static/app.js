@@ -82,7 +82,7 @@ $("#verifyBtn").onclick = async () => {
   const r = await fetch("/v1/audit/verify");
   if (!r.ok) { $("#verify").innerHTML = '<span class="chip warn">needs API key</span>'; return; }
   const v = await r.json();
-  $("#verify").innerHTML = v.ok ? '<span class="chip ok">✓ chain intact</span>' : `<span class="chip bad">✕ broken at line ${v.first_bad_line}</span>`;
+  $("#verify").innerHTML = v.ok ? '<span class="chip ok">chain intact</span>' : `<span class="chip bad">broken at line ${v.first_bad_line}</span>`;
 };
 $("#text").value = SAMPLE;
 loadPolicy(); loadAudit();

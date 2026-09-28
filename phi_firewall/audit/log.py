@@ -5,7 +5,7 @@ deletes a line, every hash after it stops matching and `verify_chain` points
 at the first broken line. HIPAA requires audit controls (45 CFR 164.312(b));
 this is a simple, dependency-free way to make logs trustworthy.
 
-We NEVER log PHI values — only counts per entity type.
+We NEVER log PHI values - only counts per entity type.
 """
 from __future__ import annotations
 

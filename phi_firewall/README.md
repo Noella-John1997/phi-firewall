@@ -1,4 +1,4 @@
-# `phi_firewall/` — the package
+# `phi_firewall/` - the package
 
 | File / folder | Purpose |
 | --- | --- |

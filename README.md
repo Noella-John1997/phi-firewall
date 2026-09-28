@@ -1,4 +1,4 @@
-# PHI Firewall — keep patient data out of your LLM prompts
+# PHI Firewall - keep patient data out of your LLM prompts
 
 ![python](https://img.shields.io/badge/python-3.10%2B-blue) ![tests](https://img.shields.io/badge/tests-pytest-green) ![license](https://img.shields.io/badge/license-MIT-lightgrey)
 
@@ -16,17 +16,17 @@ Your app                        PHI Firewall                              LLM pr
  follow up in 2 wks"       + tamper-evident audit log                follow up in 2 wks"
 ```
 
-## Why this matters (in simple words)
+## Why this matters
 
 Hospitals, insurers and health-tech startups want to use LLMs, but sending patient data to a third
 party is a compliance risk (HIPAA in the US, DPDP Act in India). Most teams either don't use LLMs
 at all, or copy-paste redaction code into every service. A firewall does it **once, centrally**:
 
-- **Works with existing code** — it speaks the OpenAI `/v1/chat/completions` format; point your SDK's `base_url` at it.
-- **Reversible where it helps, permanent where it must be** — per-entity policy: tokenize, mask, block or allow.
-- **India-aware** — Aadhaar numbers are confirmed with the **Verhoeff checksum**, PAN with its holder-type rule. Most open-source redactors only know US formats.
-- **Encrypted vault** — token maps are stored with **envelope encryption** (AES-256-GCM data keys wrapped by a master key; KMS-ready, supports key rotation).
-- **Tamper-evident audit log** — every record is hash-chained to the previous one; edit or delete a line and `verify` points to it. It never stores PHI values, only counts.
+- **Works with existing code** - it speaks the OpenAI `/v1/chat/completions` format; point your SDK's `base_url` at it.
+- **Reversible where it helps, permanent where it must be** - per-entity policy: tokenize, mask, block or allow.
+- **India-aware** - Aadhaar numbers are confirmed with the **Verhoeff checksum**, PAN with its holder-type rule. Most open-source redactors only know US formats.
+- **Encrypted vault** - token maps are stored with **envelope encryption** (AES-256-GCM data keys wrapped by a master key; KMS-ready, supports key rotation).
+- **Tamper-evident audit log** - every record is hash-chained to the previous one; edit or delete a line and `verify` points to it. It never stores PHI values, only counts.
 
 ## Quick start (no LLM account needed)
 
@@ -124,8 +124,8 @@ Change any of these in [`phi_firewall/policy/default_policy.yaml`](phi_firewall/
 | --- | --- | --- |
 | `PHI_FIREWALL_MASTER_KEYS` | temporary key (warning) | `kid:base64` list, first is active. Rotate by adding a new key in front. |
 | `UPSTREAM_BASE_URL` | `mock` | LLM API base URL, or `mock` |
-| `UPSTREAM_API_KEY` | — | Key for the upstream LLM |
-| `FIREWALL_API_KEYS` | — | If set, clients must send `X-Firewall-Key` |
+| `UPSTREAM_API_KEY` | - | Key for the upstream LLM |
+| `FIREWALL_API_KEYS` | - | If set, clients must send `X-Firewall-Key` |
 | `VAULT_PATH` | `vault.db` | SQLite file for the encrypted token vault |
 | `VAULT_TTL_SECONDS` | `900` | How long token maps live |
 | `AUDIT_LOG_PATH` | `audit.jsonl` | Audit log file |
@@ -150,13 +150,13 @@ See `.env.example`.
 | [`tests/`](tests/) | pytest suite |
 | [`examples/`](examples/) | Demo client, OpenAI SDK example, sample clinical note |
 
-## Honest limitations
+## Limitations
 
 - Regex + cue-word name detection misses names with no cue ("Jane came in today"). Install the
   `presidio` extra for NER, and treat this as **one layer** of defence, not a compliance certificate.
 - Streaming responses (`stream: true`) are not supported yet.
-- The vault is SQLite — fine for one machine; use Redis or DynamoDB for many replicas.
-- Tokens can be split by the LLM in rare cases (e.g. `[[PERSON_1]]'s`) — handled, but paraphrased tokens won't rehydrate.
+- The vault is SQLite - fine for one machine; use Redis or DynamoDB for many replicas.
+- Tokens can be split by the LLM in rare cases (e.g. `[[PERSON_1]]'s`) - handled, but paraphrased tokens won't rehydrate.
 
 ## Roadmap
 
@@ -165,4 +165,4 @@ per-tenant policies · format-preserving fake values (e.g. a realistic fake name
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT - see [LICENSE](LICENSE).

@@ -1,9 +1,9 @@
-# `deploy/` — put PHI Firewall online (free)
+# `deploy/` - put PHI Firewall online (free)
 
 Three ways to run the web app. All use the `Dockerfile` in the repo root, which listens on `$PORT`
 (default 8000) and exposes `/health` for health checks.
 
-## Option 1 — Render (recommended, easiest)
+## Option 1 - Render (recommended, easiest)
 
 1. Push this repo to GitHub.
 2. Create a free account at [render.com](https://render.com) and connect your GitHub.
@@ -17,7 +17,7 @@ without it a temporary key is generated at start, which is fine for a demo.
 > Free Render services sleep after ~15 minutes without traffic; the first visit after that takes ~30–60 seconds to wake up.
 > Mention "may take a minute to wake up" next to the link on your resume.
 
-## Option 2 — Hugging Face Spaces (always-on free CPU, popular with AI recruiters)
+## Option 2 - Hugging Face Spaces (always-on free CPU, popular with AI recruiters)
 
 1. Create an account at [huggingface.co](https://huggingface.co) → **New Space** → name `phi-firewall`, SDK **Docker**, template **Blank**, hardware **CPU basic (free)**.
 2. Create an access token (Settings → Access Tokens, role *write*).
@@ -34,7 +34,7 @@ git checkout main
 
 4. The Space builds and runs at `https://huggingface.co/spaces/<hf-username>/phi-firewall`.
 
-## Option 3 — Docker on your own machine
+## Option 3 - Docker on your own machine
 
 ```bash
 docker build -t phi-firewall .

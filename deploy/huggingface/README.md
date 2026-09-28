@@ -1,6 +1,5 @@
 ---
 title: PHI Firewall
-emoji: 🛡️
 colorFrom: indigo
 colorTo: blue
 sdk: docker

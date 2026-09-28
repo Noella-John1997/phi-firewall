@@ -1,6 +1,6 @@
 """Key providers: where master keys live.
 
-Envelope encryption in one picture:
+Envelope encryption:
 
     master key (KMS / env)  --wraps-->  data key (random, per record)  --encrypts-->  PHI
 

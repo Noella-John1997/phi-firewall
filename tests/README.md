@@ -1,4 +1,4 @@
-# `tests/` — automated tests
+# `tests/` - automated tests
 
 ```bash
 pytest -q

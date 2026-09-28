@@ -28,7 +28,7 @@ class OpenAICompatibleUpstream:
 
 class MockUpstream:
     """Pretends to be an LLM. It repeats what it received, so you can SEE that
-    the model only ever gets tokens — and that the firewall restores them."""
+    the model only ever gets tokens - and that the firewall restores them."""
 
     def __init__(self):
         self.last_payload: dict | None = None

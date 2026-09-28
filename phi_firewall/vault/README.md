@@ -1,8 +1,8 @@
-# `vault/` — encrypted storage for token maps
+# `vault/` - encrypted storage for token maps
 
 The mapping `{"PERSON_1": "Jane Doe", ...}` *is* PHI, so it must be encrypted at rest.
 
-## Envelope encryption (simple version)
+## Envelope encryption
 
 ```
 master key  ──wraps──►  data key (new random key per record)  ──encrypts──►  the mapping

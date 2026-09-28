@@ -2,7 +2,7 @@
 
 Stored in SQLite so it survives restarts and works across uvicorn workers on
 one machine. Swap for Redis/DynamoDB when you scale out. Entries expire after
-`ttl_seconds` — the firewall only needs them for the life of one LLM call.
+`ttl_seconds` - the firewall only needs them for the life of one LLM call.
 """
 from __future__ import annotations
 
