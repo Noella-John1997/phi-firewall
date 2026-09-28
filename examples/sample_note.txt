@@ -1,0 +1,6 @@
+Discharge note
+Patient: Jane Doe, DOB: 04/12/1987, MRN: AB123456.
+Contact: jane.doe@gmail.com, +91 98765 43210. Aadhaar 2345 6789 0124, PAN ABCPE1234F.
+Admitted March 3, 2025 with community-acquired pneumonia. Treated with IV ceftriaxone,
+switched to oral amoxicillin on day 3. Seen by Dr. Mehta (NPI 1234567893).
+Follow up in 2 weeks. Allergic to penicillin? No known drug allergies.

@@ -1,0 +1,19 @@
+# What to do with each entity type.
+#   tokenize: replace with [[TYPE_n]] and restore it in the LLM's answer (default)
+#   mask:     replace with [TYPE] forever (the LLM and the caller never see it again)
+#   block:    reject the whole request (HTTP 422)
+#   allow:    leave it as is
+default: tokenize
+entities:
+  CREDIT_CARD: block      # there is no reason to send card numbers to an LLM
+  AADHAAR: mask
+  SSN: mask
+  PAN: tokenize
+  EMAIL: tokenize
+  PHONE: tokenize
+  PERSON: tokenize
+  MRN: tokenize
+  NPI: allow              # provider IDs are public in the NPPES registry
+  DOB: tokenize
+  DATE: tokenize          # HIPAA Safe Harbor treats all dates (except year) as identifiers
+  IP_ADDRESS: mask

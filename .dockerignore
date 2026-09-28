@@ -1,0 +1,6 @@
+.venv
+tests
+examples
+*.db
+*.jsonl
+.git
